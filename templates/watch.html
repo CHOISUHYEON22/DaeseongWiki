@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>대대숲 - UNDER_CONTROL</title>
+    <style>
+        body { background-color: black; }
+        a { text-decoration: none; color: chartreuse;  font-size: 20px; }
+        input { background-color: black; outline-color: black; color: chartreuse; font-size: 15px; }
+        textarea { background-color: black; font-size: 13px; color: chartreuse; height: 640px; width: 98%; padding-left: 6px; margin: 0;}
+    </style>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script> function resize(obj) { obj.style.height = "1px"; obj.style.height = (12 + obj.scrollHeight) + "px"; } </script>
+</head>
+<body>
+    <br/>
+    <form method="post" action="{{ url_for('CalC') }}">
+        <a href="{{ url_for('index') }}">UNDER_CONTROL&nbsp;&nbsp;</a><input type="submit" value="SUBMIT"/><br/><br/>
+        <label>
+            <textarea name="modification">
+                {% for i in DATA %}
+                    {{ "{0} | {1} | {2} | {3} | {4} | {5}".format(i[0], i[1], i[2], i[3], i[4], i[5]) }}&
+                {% endfor %}
+            </textarea>
+        </label>
+    </form>
+</body>
+</html>

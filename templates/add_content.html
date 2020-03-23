@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대대숲 - 글 추가</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+</head>
+<body>
+    <div class="top_menu">
+      <a href="{{ url_for('index') }}"><p style="margin-left: 0; margin-top: 5px; margin-bottom: 5px;"><img src="{{url_for('static', filename='image/school_signature.png')}}" width="180" height="40" alt=""></p></a>
+        <div></div>
+        <div></div>
+    </div>
+<div class="container">
+<table class="table table-bordered">
+    <thead>
+        <caption> [대성대나무숲] - 글쓰기 </caption>
+    </thead>
+    <tbody>
+        <form action="{{ url_for('Add') }}" method="post" encType="multiplart/form-data">
+            <tr>
+                <th width="70">제목: </th>
+                <td><label><input type="text" placeholder="제목을 입력하세요. " rows="5" name="title" class="form-control"/></label></td><br/><br/>
+            </tr>
+            <br>
+            <br>
+            <tr>
+                <th width="70"> 내용: </th>
+                <td><label><textarea cols=300 placeholder="내용을 입력하세요. (우측 하단 //버튼으로 창 크기를 조절 할 수 있습니다.)" rows="5" name="content" class="form-control" style="width: 100%"></textarea></label></td>
+            </tr>
+            <tr>
+                <th width="70">분류:</th>
+                <td>
+                    <label style="padding-top: 4px">
+                        <select name="category">
+                            <option value="{{ LIST[0] }}" selected="selected">{{ LIST[0] }}</option>
+                            {% for i in LIST[1:] %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </td>
+            </tr>
+            <input type="hidden" name="AorM" value="A"/>
+            <tr><td colspan="2"><input type="submit" value="등록" class="pull-right"/></td></tr>
+        </form>
+    </tbody>
+</table>
+</div>
+</body>
+</html>

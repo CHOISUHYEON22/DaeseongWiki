@@ -1,0 +1,45 @@
+.a_tag{
+  color: black;
+  text-decoration: none;
+}
+
+#bottom{
+  position: absolute;
+  left: 28%;
+  top: 150px;
+}
+
+.top_menu{
+  width: auto;
+  height: auto;
+  display: grid;
+  grid-template-columns: 50px 200px 1fr;
+  border-bottom: thin solid #000000;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.main_center{
+  position: relative;
+  border: 4px;
+  text-align: center;
+}
+
+.search{
+
+  padding-top: 30px;
+  text-align: center;
+  width: 600px;
+  height: 44px;
+  padding-left: 22px;
+
+}
+
+.add{
+  border: none;
+  outline: none;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0);
+  padding: 0;
+}
