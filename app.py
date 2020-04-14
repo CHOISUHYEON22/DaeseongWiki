@@ -109,7 +109,7 @@ def Add():
 
         DATA[3][index].append(content)
 
-    with open("DATA.txt", "wb") as f: pickle.dump(DATA, f)
+    with open("/DATA.txt", "wb") as f: pickle.dump(DATA, f)
 
     if AorM == 'A': return redirect(url_for('newContents'))
 

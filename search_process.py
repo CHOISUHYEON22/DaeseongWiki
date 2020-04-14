@@ -3,7 +3,7 @@ from pickle import load
 
 def origin():
 
-    with open(".\DATA.txt", "rb") as f: return load(f)
+    with open("/DATA.txt", "rb") as f: return load(f)
 
 
 def search(word: str, DATA: list): return [j for i in range(3) for j in range(len(DATA[0])) if word in DATA[i][j]]
@@ -43,7 +43,7 @@ def date_sort(List: list):
 
         else: date[sign.index(List[i][1])].append(i)
 
-    Dict = dict(zip(date, sign))
+    Dict = dict(zip(sign, date))
 
     for i in range(len(sign)-1):
 

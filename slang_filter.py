@@ -3,7 +3,7 @@ import pickle
 
 def slangFilter(text:str):
 
-    with open("Slang.txt", "rb") as f: slang_list = pickle.load(f)
+    with open("/Slang.txt", "rb") as f: slang_list = pickle.load(f)
 
     text_list = text.split()
 
