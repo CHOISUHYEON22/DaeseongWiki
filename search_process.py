@@ -1,119 +1,56 @@
 from pickle import load
+from clojure_fn import group_by
+
+# (((제목), (날짜), (내용), (별점), (분류), [히스토리]), ... )
+
+def get_data() -> tuple:
+
+    with open("./DATA.txt", "rb") as f: return load(f)
 
 
-def origin():
-
-    with open("/DATA.txt", "rb") as f: return load(f)
+def search_simple(search_term: str, data: tuple) -> tuple: return tuple({i for v in data for i, u in enumerate(v)[:3] if search_term in u})
 
 
-def search(word: str, DATA: list): return [j for i in range(3) for j in range(len(DATA[0])) if word in DATA[i][j]]
+def search_detail(category: str, utility: str, start_when: str, end_when: str, data: tuple) -> tuple:
+
+    return tuple(i for i, v in enumerate(data) if all((v[1][:2] >= start_when[2:], v[1][:2] <= end_when[2:], v[3] >= utility, v[4] == category)))
 
 
-def search_detail(category:str, help:str, startWhen:str, endWhen:str, DATA:list):
+def date_sort(data: tuple) -> tuple:
 
-    return [j for j in range(len(DATA[0])) if all((int(DATA[1][j][20:]) >= int(startWhen),
-            int(DATA[1][j][20:]) <= int(endWhen), DATA[4][j] == category, float(DATA[5][j]) >= float(help)))]
+    when_data: dict = group_by(lambda x: x[1], data)
 
-
-def date_compare(date1:str, date2:str): #date1 > date2에 대한 답
-
-    Month = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
-
-    if int(date1[20:]) > int(date2[20:]): return True
-    elif int(date1[20:]) < int(date2[20:]): return False
-
-    if Month.index(date1[4:7]) > Month.index(date2[4:7]): return True
-    elif Month.index(date1[4:7]) < Month.index(date2[4:7]): return False
-
-    for i in range(8, 18, 3):
-
-        if int(date1[i:i+2]) > int(date2[i:i+2]): return True
-        elif int(date1[i:i+2]) < int(date2[i:i+2]): return False
-
-    return True
+    return tuple(i for k in sorted(when_data.keys(), reverse=True) for i in when_data[k])
 
 
-def date_sort(List: list):
-
-    date, sign = list(), list()
-
-    for i in range(len(List)):
-
-        if List[i][1] not in sign: date.append([i]); sign.append(List[i][1])
-
-        else: date[sign.index(List[i][1])].append(i)
-
-    Dict = dict(zip(sign, date))
-
-    for i in range(len(sign)-1):
-
-        for j in range(1, len(sign)-i):
-
-            if date_compare(sign[j-1], sign[j]):
-
-                sign[j-1], sign[j] = sign[j], sign[j-1]
-
-    return [List[j] for i in sign for j in Dict[i]]
+def date_rsort(data: tuple) -> tuple: return tuple(reversed(date_sort(data)))
 
 
-def utility_sort(List:list):
+def utility_sort(data: tuple) -> tuple:
 
-    utility_sep = [[], [], [], [], []]
+    utility_data: dict = {i[3] : i for i in data}
 
-    for i in List: utility_sep[int(float(i[3])) - 1].append(i)
-
-    for j in range(5):
-
-        if len(utility_sep[j]) not in range(2):
-
-            utility_sep[j] = date_sort(utility_sep[j])
-
-    return [n for m in utility_sep[::-1] for n in m]
+    return tuple(utility_data[k] for k in sorted(utility_data.keys(), reverse=True))
 
 
-def spell_sort(List: list):
-
-    spell = {i[0] : i for i in List}
-
-    return [spell[i] for i in sorted(spell.keys())]
+def spell_sort(data: tuple) -> tuple: return tuple(sorted(data))
 
 
-def design_search(preprocess):
-
-    origin_data = origin()
-    result = list()
-    used = list()
-
-    for j in preprocess:
-
-        if j not in used:
-
-            result.append([origin_data[i][j] for i in (0, 1, 5)])
-
-            result[-1].insert(2, origin_data[2][j][:19] if len(origin_data[2]) > 20 else origin_data[2][j])
-
-            used.append(j)
-
-    return result
+def simple_search_process(search_term: str) -> tuple: return date_sort(search_simple(search_term, get_data()))
 
 
-def design_simple(word: str): return date_sort(design_search(search(word, origin())))
+def detail_search_process(category: str, help: str, start_when: str, end_when: str) -> tuple:
+
+    return date_sort(search_detail(category, help, start_when, end_when, get_data()))
 
 
-def design_detail(category:str, help:str, startWhen:str, endWhen:str, DATA:list):
+def new_contents_process() -> tuple:
 
-    return date_sort(design_search(search_detail(category, help, startWhen, endWhen, DATA)))
+    data_len = len(get_data())
+
+    return date_sort(get_data()[:10 if data_len > 10 else data_len])
 
 
-def newContentsProcess(): return date_sort(design_search([i for i in range(len(origin()[0]))]))[::-1]
+def resort_by_sorting_type_change(result: tuple, type: str) -> tuple:
 
-
-def define_type(result:list, type:str):
-
-    if type == 'new': return [i for i in date_sort(result)[::-1]]
-
-    elif type == 'old': return date_sort(result)
-
-    elif type == 'spell': return spell_sort(result)
-
-    else: return utility_sort(result)
+    return (spell_sort if type == 'spell' else date_sort if type == 'new' else date_rsort if type == 'old' else utility_sort)(result)
