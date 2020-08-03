@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="kr" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>대대숲 - 상세검색</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+  </head>
+  <body>
+    <div>
+      <div class="top_menu">
+          <a class="add" href="{{ url_for('add') }}"><img src="{{url_for('static', filename='image/plus.ico')}}" width="35" height="35" alt=""></a>
+          <a href="{{url_for('index')}}"><p style="margin-left: 0; margin-top: 0; margin-bottom: 0;"><img src="{{url_for('static', filename='image/school_signature.png')}}" width="180" height="40" alt=""></p></a>
+          <form action="{{ url_for('search') }}" method="get" style="margin-left: auto; padding-top: 10px">
+              범주&nbsp;
+              <label>
+                  <select name="category">
+                    {% if data %}
+                    <option value="{{ data[0][4] }}" selected="selected">{{ data[0][4] }}</option>
+                    {% for i in data %}
+                        <option value="{{ i[4] }}">{{ i[4] }}</option>
+                    {% endfor %}
+                    {% endif %}
+                  </select>
+              </label>&nbsp;&nbsp;
+              최소 유용성&nbsp;
+              <label>
+                  <select name="utility">
+                      {% for i in range(1, 6) %} <option value="{{ i }}">{{ i }}</option> {% endfor %}
+                  </select>
+              </label>&nbsp;&nbsp;
+              시기(년)&nbsp;
+              <label><input type="number" name="start_when" value="{{ start_when }}" min="2020" max="9999" style="width: 55px" required/></label>~
+              <label><input type="number" name="end_when" value="{{ end_when }}" min="2020" max="9999" style="width: 55px" required/></label>
+              <input type="hidden" name="type" value="date_sort"/>
+            <input type="hidden" name="simple_or_detail" value="D"/>&nbsp;
+              <input type="submit" value="상세 검색">
+          </form>
+      </div>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
+

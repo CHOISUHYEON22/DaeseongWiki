@@ -1,196 +1,133 @@
-from search_process import design_simple, design_detail, origin, define_type, newContentsProcess
+from search_process import simple_search_process, detail_search_process, resort_by_sorting_type_change, new_contents_process
 from flask import Flask, render_template, request, redirect, url_for
-from AdvancedFunction import modificationOrigin
-from slang_filter import slangFilter
 from datetime import datetime
-from time import ctime
+from time import strftime
 import pickle
 
 app = Flask(__name__)
 
-result = list()
-DATA = list()
+
+#def list_category() -> tuple: return tuple({i[4] for i in get_data()})
 
 
-def List_menu():
+#def list_title() -> tuple: return tuple({i[0] for i in get_data()})
 
-    with open(".\DATA.txt", "rb") as f: return tuple(set(pickle.load(f)[4]))
+def get_data() -> tuple:
+
+    with open("./DATA.txt", "rb") as f: return pickle.load(f)
 
 
-def List_title():
+def save_data(data: tuple) -> None:
 
-    with open(".\DATA.txt", "rb") as f: return tuple(set(pickle.load(f)[0]))
+    with open("./DATA.txt", "wb") as f: pickle.dump(data, f)
 
 
 @app.route('/')
-def index(): return render_template('index.html', YorN=True)
+def index(): return render_template('index.html', data=get_data())
 
 
-@app.route('/Search', methods=['GET'])
-def Search():
+@app.route('/search', methods=['GET'])
+def search():
 
-    global result
-    global DATA
+    if request.args.get('simple_or_detail') == 'S':
 
-    if request.args.get('S_D') == 'S':
+        search_term = request.args.get('search_term')
 
-        word = request.args.get('word')
+        return render_template('search_simple.html', result=simple_search_process(search_term, get_data()), search_term=search_term, file_name='search_simple.html', data=get_data())
 
-        result = design_simple(word)
+    else:
 
-        return render_template('search.html', result=result, word=word, filename='search.html')
+        cond = tuple(request.args.get(i) for i in ('start_when', 'end_when', 'category', 'utility')) + (get_data(),)
 
-    elif request.args.get('S_D') == 'D':
-
-        category = request.args.get('category')
-        startWhen = request.args.get('startWhen')
-        endWhen = request.args.get('endWhen')
-        help = request.args.get('help')
-
-        DATA = design_detail(category, help, startWhen, endWhen, origin())
-
-        return render_template('in_menu.html', LIST=List_menu(), thisYear=datetime.now().year, DATA=DATA, filename='in_menu.html')
+        return render_template('search_detail.html', start_when=cond[0], end_when=cond[1], result=detail_search_process(*cond), file_name='search_detail.html')
 
 
 @app.route('/type', methods=['GET'])
 def type():
 
-    global type
-    filename = request.args.get('filename')
+    file_name = request.args.get('file_name')
 
-    if filename == 'search.html':
+    result = resort_by_sorting_type_change(eval(request.args.get('result')), request.args.get('type'), get_data())
 
-        result = globals()['result']
-        type = request.args.get('type')
-        word = request.args.get('word')
+    if file_name == 'search_simple.html': return render_template(file_name, result=result, search_term=request.args.get('search_term'), file_name=file_name, data=get_data())
 
-        return render_template(filename, result=define_type(result, type), word=word, filename=filename)
-
-    elif filename == 'in_menu.html':
-
-        thisYear = request.args.get('thisYear')
-        type = request.args.get('type')
-        DATA = globals()['DATA']
-
-        return render_template(filename, LIST=List_menu(), thisYear=thisYear, DATA=define_type(DATA, type), filename=filename)
+    else: return render_template(file_name, this_year=request.args.get('this_year'), result=result, file_name=file_name, data=get_data())
 
 
 @app.route('/add')
-def add(): return render_template("add_content.html", LIST=List_menu())
+def add(): return render_template("add_content.html")
 
 
-@app.route('/Add', methods=['POST'])
-def Add():
+@app.route('/process_add_modify', methods=['POST'])
+def process_add_modify():
 
-    content = slangFilter(request.form['content']).strip()
-    AorM = request.form['AorM']
-    DATA = origin()
+    content, data = request.form['content'].strip(), get_data()
 
-    if AorM == 'A':
+    if request.form['add_or_modify'] == 'A':
 
-        title = slangFilter(request.form['title']).strip()
-        category = request.form['category']
+        title, category = request.form['title'].strip(), request.form['category']
 
-        try: help = request.form['help']
+        data += (title, strftime('%y-%m-%d %H:%M:%S'), content, 1, category, [content])
 
-        except: help = 1
-
-        input_info = [title, ctime(), content, [content], category, help]
-
-        for i in range(6): DATA[i].append(input_info[i])
+        redirect_add_modify(data)
 
     else:
 
         index = int(request.form['index'][:-1])
 
-        DATA[1][index] = ctime()
+        data[index] = data[index][0] + (strftime('%y-%m-%d %H:%M:%S'), content) + data[index][3:5] + data[index][5].append(content)
 
-        DATA[2][index] = content
+        redirect_add_modify(data, index)
 
-        DATA[3][index].append(content)
 
-    with open("/DATA.txt", "wb") as f: pickle.dump(DATA, f)
+def redirect_add_modify(data: tuple, index: int = None):
 
-    if AorM == 'A': return redirect(url_for('newContents'))
+    save_data(data)
 
-    else: return redirect(url_for('info', infoTitle=DATA[0][int(request.form['index'][:-1])]))
+    return redirect(url_for('info', info_title=data[index][0] if index else url_for('new_contents')))
 
 
 @app.route('/modification', methods=['POST'])
 def modification():
 
-    index = int(request.form['index'])
-    title = origin()[0][index]
-    content = origin()[2][index]
-    category = origin()[4][index]
-    help = origin()[5][index]
+    data = get_data()
 
-    return render_template("Modification.html", LIST=List_menu(), index=index, title=title, content=content, category=category, help=help)
+    index = int(request.form['index'])
+
+    title, content, utility, category = (data[index][i] for i in (0, 2, 3, 4))
+
+    return render_template("Modification.html", list_category=list_category(), index=index, title=title, content=content, category=category, utility=utility)
 
 
 @app.route("/menu")
-def menu(): return render_template('in_menu.html', LIST=List_menu(), thisYear=datetime.now().year)
+def menu(): return render_template('search_detail.html', this_year=datetime.now().year)
 
 
-@app.route("/newContents")
-def newContents():
+@app.route("/new_contents")
+def new_contents():
 
-    data = newContentsProcess()
+    data = get_data()
 
-    if len(data) > 10: return render_template('pre_in_menu.html', LIST=List_menu(), thisYear=datetime.now().year, DATA=data[:10])
-
-    else: return render_template('pre_in_menu.html', LIST=List_menu(), thisYear=datetime.now().year, DATA=data)
+    return render_template('pre_in_menu.html', start_when=datetime.now().year, end_when=datetime.now().year,  data=new_contents_process(data, len(data)))
 
 
-
-@app.route("/info/<infoTitle>")
-def info(infoTitle): return render_template('info.html', Info=[origin()[i][origin()[0].index(infoTitle)] for i in range(6)], index=origin()[0].index(infoTitle), infoTitle=infoTitle)
-
-
-@app.route("/helpCalc", methods=['POST'])
-def helpCalc():
-
-    Origin = origin()
-
-    infoTitle = request.form['infoTitle']
-
-    Origin[5][int(request.form['index'])] = (int(Origin[5][int(request.form['index'])]) + int(request.form['help'])) / 2
-
-    with open("DATA.txt", "wb") as f: pickle.dump(Origin, f)
-
-    return render_template('info.html', Info=[origin()[i][origin()[0].index(infoTitle)] for i in range(6)], index=origin()[0].index(infoTitle), infoTitle=infoTitle)
+@app.route("/info/<info_title>")
+def info(info_title):
+    return render_template('info.html', info=[get_data()[list_title().index(info_title)][i] for i in range(6)], index=get_data()[0].index(info_title), info_title=info_title)
 
 
-@app.route("/helpContent")
-def helpContent(): return render_template('helpContent.html')
+@app.route("/utility_calc", methods=['POST'])
+def utility_calc():
 
+    data = get_data()
 
-@app.route("/{!!/[%$$%/%&&%]/!!/}")
-def check_given(): return render_template("check.html")
+    info_title = request.form['info_title']
 
+    data[5][int(request.form['index'])] = (int(data[5][int(request.form['index'])]) + int(request.form['help'])) / 2
 
-@app.route("/{!!/[%^%/%&%]/!!/}", methods=['POST'])
-def check():
-     if request.form['pw'] == '&Admin&': return redirect(url_for('data'))
-     else: return redirect(url_for('index'))
+    with open("DATA.txt", "wb") as f: pickle.dump(data, f)
 
-
-@app.route("/{!![%$%/%&%]/!!/}")
-def data():
-
-    Origin = origin()
-
-    process = [[Origin[0][i], Origin[1][i], Origin[2][i], Origin[4][i], Origin[5][i], Origin[3][i]] for i in range(len(Origin[0]))]
-
-    return render_template("watch.html", DATA=process)
-
-
-@app.route("/{!![%*%/%&%]/!!/}", methods=['POST'])
-def CalC():
-
-    modificationOrigin(request.form['modification'])
-
-    return redirect(url_for('data'))
+    return render_template('info.html', Info=[get_data()[i][get_data()[0].index(info_title)] for i in range(6)], index=get_data()[0].index(info_title), infoTitle=info_title)
 
 
 if __name__ == '__main__':

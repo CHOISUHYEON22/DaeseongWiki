@@ -26,7 +26,7 @@
         <caption> [대성대나무숲] - 글쓰기 </caption>
     </thead>
     <tbody>
-        <form action="{{ url_for('Add') }}" method="post" encType="multiplart/form-data">
+        <form action="{{ url_for('process_add_modify') }}" method="post" encType="multiplart/form-data">
             <tr>
                 <th width="70">제목: </th>
                 <td><label><input type="text" placeholder="제목을 입력하세요. " rows="5" name="title" class="form-control"/></label></td><br/><br/>
@@ -38,7 +38,7 @@
                 <td><label><textarea cols=300 placeholder="내용을 입력하세요. (우측 하단 //버튼으로 창 크기를 조절 할 수 있습니다.)" rows="5" name="content" class="form-control" style="width: 100%"></textarea></label></td>
             </tr>
             <tr>
-                <th width="70">분류:</th>
+                <th width="70">분류: </th>
                 <td>
                     <label style="padding-top: 4px">
                         <select name="category">

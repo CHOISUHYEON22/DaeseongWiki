@@ -27,7 +27,7 @@
         <caption> [대성대나무숲] - 수정하기 </caption>
     </thead>
     <tbody>
-        <form action="{{ url_for('Add') }}" method="post" encType="multiplart/form-data">
+        <form action="{{ url_for('process_add_modify') }}" method="post" encType="multiplart/form-data">
             <tr>
                 <th>제목: </th>
                 <td><label><input type="text" value="{{ title }}" rows="5" name="title" class="form-control" readonly="readonly"/></label></td><br><br>
