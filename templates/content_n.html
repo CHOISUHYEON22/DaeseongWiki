@@ -1,0 +1,41 @@
+{% extends 'layout_n.html' %}
+
+{# 좀 더 예쁘게 꾸미기 #}
+{# 제목 : content[0], 범주 : content[4], 날짜 : content[1], 별점 : content[3][0], 내용 : content[2] #}
+{% block content %}
+    <script>
+        function popupForModifying() {
+            let option = "width=820, height=400, toolbar=no, menubar=no, location=no, directories=no, status=no, scrollbars=yes, resizable=no";
+            window.open("{{ url_for('modify',  content=content[2], title=content[0], category=content[4]) }}", "", option);
+        }
+    </script>
+
+    <article>
+        <table class="table">
+            <thead>
+                <tr class="table-active">
+                    <th class="col-8 text-left">{{ content[0] }}</th>
+                    <th class="col-4"></th>
+                </tr>
+                <tr>
+                    <td class="text-left">{{ content[4] }}&nbsp;&nbsp;
+                        |&nbsp;&nbsp;{{ content[1] }}&nbsp;&nbsp;
+                        |&nbsp;&nbsp;{{ content[3][0] }}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col-12 text-left">{{ content[2] }}</td>
+                    <td class="col-0"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <a class="btn btn-light" href="javascript:popupForModifying()">수정하기</a>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </article>
+{% endblock %}

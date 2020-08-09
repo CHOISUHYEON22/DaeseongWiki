@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<article>
+    <script>
+        function check2MakeSure() {
+            if (document.getElementById("precaution").checked === false) {
+                alert("유의사항을 확인해주시기 바랍니다.");
+                return false;
+            }
+            return true;
+        }
+
+        function resizeTextarea(obj) {
+            obj.style.height = "1px";
+            obj.style.height = (12 + obj.scrollHeight) + "px";
+        }
+    </script>
+
+    <h3 class="mx-3 mt-3">게시물 작성하기</h3>
+    <form action="{{ url_for('process_add_modify') }}" method="post" onsubmit="return check2MakeSure()">
+        <div class="card m-3" style="width: 785px;">
+            <div class="card-body pb-0">
+                <input type="hidden" name="add_or_modify" value="A">
+
+                <div class="form-group row">
+                    <label for="title" class="col-sm-2 col-form-label">제목</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="title" name="title" minlength="1" maxlength="23"
+                               placeholder="글자수 제한 : 1 ~ 23">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="category" class="col-sm-2 col-form-label">범주</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="category" name="category">
+                            {% for i in list_category %}
+                                <option>{{ i }}</option> {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="content" class="col-sm-2 col-form-label">내용</label>
+                    <div class="col-sm-10">
+                            <textarea class="form-control" id="content" name="content" minlength="1" maxlength="500"
+                                      onkeydown="resizeTextarea(this)" onkeyup="resizeTextarea(this)"
+                                      placeholder="글자수 제한 : 1 ~ 500"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-2">유의사항</div>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="precaution">
+                            <label class="form-check-label" id="precaution" for="precaution">
+                                제목과 범주는 후에 관리자를 거치지 않고서는 수정이 불가 합니다 .
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mx-3 mt-1" id="submit" style="width: 785px;">업로드</button>
+    </form>
+    <br>
+</article>
+</body>
+</html>
