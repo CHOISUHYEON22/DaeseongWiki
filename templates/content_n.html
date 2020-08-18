@@ -1,12 +1,10 @@
 {% extends 'layout_n.html' %}
 
-{# 좀 더 예쁘게 꾸미기 #}
-{# 제목 : content[0], 범주 : content[4], 날짜 : content[1], 별점 : content[3][0], 내용 : content[2] #}
 {% block content %}
     <script>
         function popupForModifying() {
             let option = "width=820, height=400, toolbar=no, menubar=no, location=no, directories=no, status=no, scrollbars=yes, resizable=no";
-            window.open("{{ url_for('modify',  content=content[2], title=content[0], category=content[4]) }}", "", option);
+            window.open("{{ url_for('modify', title=content[0], content=content[2], category=content[3]) }}", "", option);
         }
     </script>
 
@@ -18,9 +16,8 @@
                     <th class="col-4"></th>
                 </tr>
                 <tr>
-                    <td class="text-left">{{ content[4] }}&nbsp;&nbsp;
-                        |&nbsp;&nbsp;{{ content[1] }}&nbsp;&nbsp;
-                        |&nbsp;&nbsp;{{ content[3][0] }}</td>
+                    <td class="text-left">{{ content[1] }}&nbsp;&nbsp;
+                        |&nbsp;&nbsp;{{ content[3] }}</td>
                 </tr>
             </thead>
             <tbody>

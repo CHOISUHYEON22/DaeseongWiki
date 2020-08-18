@@ -89,18 +89,18 @@
             &nbsp;<p> {{ not did_find }} "{{ did_find }}" 검색어와 일치하는 자료를 찾지 못했습니다. 검색어를 다시 한 번 확인해 주시기 바랍니다.</p>
         {% else %}
             <ul class="nav nav-tabs" id="nav-tab" role="tablist">
-                {% for i, j in (('date', '최신순'), ('r_date', '오래된순'), ('utility', '별점순'), ('spell', '철자순')) %}
+                {% for i, j in (('date', '최신순'), ('r_date', '오래된순'), ('spell', '철자순')) %}
                     <li class="nav-item"><a class="nav-link {% if i == 'date' %} active {% endif %}" data-toggle="tab" href="#{{ i }}" role="tab">{{ j }}</a></li>
                 {% endfor %}
             </ul>
 
             <div class="tab-content" id="nav-tabContent">
-                {% for i, t in ((date_sort, 'date'), (r_date_sort, 'r_date'), (utility_sort, 'utility'), (spell_sort, 'spell')) %}
+                {% for i, t in ((date_sort, 'date'), (r_date_sort, 'r_date'), (spell_sort, 'spell')) %}
                     <div class="tab-pane fade {% if t == 'date' %} show active {% endif %}" id="{{ t }}" role="tabpanel">
                         <table class="table table-borderless table-striped">
                             <thead>
                             <tr>
-                                {% for j in ('번호', '날짜', '제목', '내용', '분류', '별점') %}
+                                {% for j in ('번호', '날짜', '제목', '내용', '분류') %}
                                     <th class="text-center">{{ j }}</th>
                                 {% endfor %}
                             </tr>
@@ -108,7 +108,7 @@
                             <tbody>
                             {% for k in i %}
                                 <tr>
-                                    {% for width_p, content in ((5, loop.index), (15, k[1]), (20, k[0]), (40, k[2][:20]), (10, k[4]), (10, k[3][0])) %}
+                                    {% for width_p, content in ((5, loop.index), (15, k[1]), (20, k[0]), (40, k[2][:20]), (10, k[3])) %}
                                         <td {% if width_p in range(16) %} class="text-center" {% endif %} style="width: {{ width_p }}%">
                                             {% if width_p == 20 %}
                                                 <a href="{{ url_for('display_content', cnt_title=content) }}" style="text-decoration: none; color: black;">{{ content }}</a>

@@ -30,14 +30,11 @@ def r_date_sort(data_searched_to_sort: list) -> list: return sort_macro(1, False
 def date_sort(data_searched_to_sort: list) -> list: return sort_macro(1, True)(data_searched_to_sort)
 
 
-def utility_sort(data_searched_to_sort: list) -> list: return sort_macro(3, True)(data_searched_to_sort)
-
-
 def new_contents_process(data: list) -> list: return data[-10 if len(data) > 10 else 0:]
 
 
 def sort_bunch(data_searched_to_sort: list) -> namedtuple:
 
-    fn_names = namedtuple('fn_names', 'date r_date spell utility')
+    fn_names = namedtuple('fn_names', 'date r_date spell')
 
-    return fn_names(**{f.__name__[:-5]: f(data_searched_to_sort) for f in (date_sort, r_date_sort, spell_sort, utility_sort)})
+    return fn_names(**{f.__name__[:-5]: f(data_searched_to_sort) for f in (date_sort, r_date_sort, spell_sort)})

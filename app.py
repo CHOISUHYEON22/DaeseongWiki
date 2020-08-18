@@ -8,7 +8,7 @@ import pickle
 app = Flask(__name__)
 
 
-def list_category() -> list: return list({i[4] for i in gain_data()})
+def list_category() -> list: return list({i[3] for i in gain_data()})
 
 
 def list_title() -> list: return list({i[0] for i in gain_data()})
@@ -29,7 +29,7 @@ def index():
 
     sorts: namedtuple = sort_bunch(new_contents_process(gain_data()))
 
-    return render_template('index_n.html', date_sort=sorts.date, r_date_sort=sorts.r_date, spell_sort=sorts.spell, title='최신 업로드', utility_sort=sorts.utility, list_category=list_category(), did_find=bool(sorts[0]))
+    return render_template('index_n.html', date_sort=sorts.date, r_date_sort=sorts.r_date, spell_sort=sorts.spell, title='최신 업로드', list_category=list_category(), did_find=bool(sorts[0]))
 
 
 @app.route('/search', methods=['GET'])
@@ -39,7 +39,7 @@ def search():
 
     else: sorts: namedtuple = sort_bunch(search_detail(gain_data(), *(request.args.get(i) for i in ('start_when', 'end_when', 'category'))))
 
-    return render_template('index_n.html', date_sort=sorts.date, r_date_sort=sorts.r_date, spell_sort=sorts.spell, utility_sort=sorts.utility, list_category=list_category(), did_find=bool(sorts[0]))
+    return render_template('index_n.html', date_sort=sorts.date, r_date_sort=sorts.r_date, spell_sort=sorts.spell, list_category=list_category(), did_find=bool(sorts[0]))
 
 
 @app.route('/add')
@@ -65,11 +65,13 @@ def process_add_modify() -> None:
 
         index_num = find_index_by_title(data, title)
 
-        data[index_num] = [title, strftime('%y-%m-%d %H:%M:%S'), content, data[index_num][3], category, data[index_num][5].append(content)]
+        data[index_num] = [title, strftime('%y-%m-%d %H:%M:%S'), content, category, data[index_num][4] + [content]]
 
-    else: data.append([title, strftime('%y-%m-%d %H:%M:%S'), content, (0, 1), category, [content]])
+    else: data.append([title, strftime('%y-%m-%d %H:%M:%S'), content, category, [content]])
 
     with open("./DATA.txt", "wb") as f: pickle.dump(data, f)
+
+    return render_template('exit_page_n.html')
 
 
 @app.route('/content')
